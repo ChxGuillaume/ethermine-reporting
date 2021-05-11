@@ -24,8 +24,6 @@ router.get('/', function (req, res, next) {
             res.json(data.map((e, i) => {
                 const {currentStatistics} = e;
 
-                if (data[i - 1]) console.log(i, currentStatistics.unpaid, data[i - 1].currentStatistics.unpaid);
-
                 return {
                     date: e.date,
                     unpaid: currentStatistics.unpaid / 1000000000000000000,
