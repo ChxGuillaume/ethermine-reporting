@@ -3,7 +3,7 @@ const router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { address: process.env.MINING_ADDRESS });
+  res.render('index', { title: 'Ethermine Reporting', address: process.env.MINING_ADDRESS });
 });
 
 module.exports = router;
