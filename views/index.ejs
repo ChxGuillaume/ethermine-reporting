@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.1.0/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="/javascripts/custom-dark.js"></script>
+</head>
+<body>
+<div id="main" style="height: 80vh"></div>
+
+<script>
+    const myChart = echarts.init(document.getElementById('main'), 'custom-dark');
+    let option;
+
+    axios
+        .get('/reporting')
+        .then(resData => {
+            const {data} = resData;
+
+            initChart(
+                data.map(e => (moment(e.date).format('YYYY-MM-DD HH:mm:ss'))),
+                data.map(e => (e.unpaid.toFixed(6))),
+                data.map(e => (e.diff.toFixed(6))),
+            )
+        })
+
+    function initChart(timeData, amountData, diffData) {
+        option = {
+            title: {
+                text: 'Ethermine History',
+                subtext: '<%= address %>',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    animation: false
+                }
+            },
+            legend: {
+                data: ['amount', 'diff'],
+                left: 'center',
+                top: '48%'
+            },
+            toolbox: {
+                feature: {
+                    dataZoom: {
+                        yAxisIndex: 'none'
+                    },
+                    restore: {},
+                    saveAsImage: {}
+                }
+            },
+            axisPointer: {
+                link: {xAxisIndex: 'all'}
+            },
+            dataZoom: [
+                {
+                    show: true,
+                    realtime: true,
+                    start: 0,
+                    xAxisIndex: [0, 1]
+                },
+                {
+                    type: 'inside',
+                    realtime: true,
+                    start: 0,
+                    xAxisIndex: [0, 1]
+                }
+            ],
+            grid: [{
+                left: 50,
+                right: 50,
+                height: '35%'
+            }, {
+                left: 50,
+                right: 50,
+                top: '55%',
+                height: '35%'
+            }],
+            xAxis: [
+                {
+                    type: 'category',
+                    boundaryGap: false,
+                    // axisLine: {onZero: true},
+                    data: timeData
+                },
+                {
+                    gridIndex: 1,
+                    type: 'category',
+                    boundaryGap: false,
+                    // axisLine: {onZero: true},
+                    data: timeData,
+                    position: 'top'
+                }
+            ],
+            yAxis: [
+                {
+                    min: 'dataMin',
+                    name: 'ETH',
+                    type: 'value'
+                },
+                {
+                    gridIndex: 1,
+                    min: 'dataMin',
+                    name: 'ETH',
+                    type: 'value',
+                    inverse: true
+                }
+            ],
+            series: [
+                {
+                    name: 'amount',
+                    type: 'line',
+                    symbolSize: 8,
+                    hoverAnimation: false,
+                    data: amountData
+                },
+                {
+                    name: 'diff',
+                    type: 'line',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    symbolSize: 8,
+                    hoverAnimation: false,
+                    data: diffData
+                }
+            ],
+            animationEasing: 'backOut',
+            animationDuration: 1000
+        };
+
+        option && myChart.setOption(option);
+    }
+</script>
+</body>
+</html>
