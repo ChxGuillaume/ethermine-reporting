@@ -27,11 +27,11 @@ router.get('/', function (req, res, next) {
                 const {currentStatistics} = e;
                 const diff = data[i - 1] ? (currentStatistics.unpaid - data[i - 1].currentStatistics.unpaid) / 1000000000000000000 : 0;
 
-                let gain = 0;
+                let profit = 0;
                 diffAccumulator += data[i - 1] ? (currentStatistics.unpaid - data[i - 1].currentStatistics.unpaid) : 0;
 
                 if (diff === 0 || i === (data.length - 1)) {
-                    gain = diffAccumulator / 1000000000000000000;
+                    profit = diffAccumulator / 1000000000000000000;
                     diffAccumulator = 0;
                 }
 
@@ -39,7 +39,7 @@ router.get('/', function (req, res, next) {
                     date: e.date,
                     unpaid: currentStatistics.unpaid / 1000000000000000000,
                     diff,
-                    gain
+                    profit
                 }
             }))
         })
