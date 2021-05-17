@@ -21,17 +21,32 @@ router.get('/', function (req, res, next) {
     reportingDb
         .getAll()
         .then(data => {
+            let diffAccumulator = 0;
+
             res.json(data.map((e, i) => {
                 const {currentStatistics} = e;
+                const diff = data[i - 1] ? (currentStatistics.unpaid - data[i - 1].currentStatistics.unpaid) / 1000000000000000000 : 0;
+
+                let gain = 0;
+                diffAccumulator += data[i - 1] ? (currentStatistics.unpaid - data[i - 1].currentStatistics.unpaid) : 0;
+
+                if (diff === 0 || i === (data.length - 1)) {
+                    gain = diffAccumulator / 1000000000000000000;
+                    diffAccumulator = 0;
+                }
 
                 return {
                     date: e.date,
                     unpaid: currentStatistics.unpaid / 1000000000000000000,
-                    diff: data[i - 1] ? (currentStatistics.unpaid - data[i - 1].currentStatistics.unpaid) / 1000000000000000000 : 0
+                    diff,
+                    gain
                 }
             }))
         })
-        .catch(() => res.status(200).send('err!'))
+        .catch((err) => {
+            console.error('ERR: ', err);
+            res.status(200).send('err!');
+        })
 });
 
 module.exports = router;

@@ -24,10 +24,11 @@
                 data.map(e => (moment(e.date).format('YYYY-MM-DD HH:mm:ss'))),
                 data.map(e => (e.unpaid.toFixed(6))),
                 data.map(e => (e.diff.toFixed(6))),
+                data.map(e => (e.gain.toFixed(6))),
             )
         })
 
-    function initChart(timeData, amountData, diffData) {
+    function initChart(timeData, amountData, diffData, gainData) {
         option = {
             title: {
                 text: 'Ethermine History',
@@ -41,7 +42,7 @@
                 }
             },
             legend: {
-                data: ['amount', 'diff'],
+                data: ['amount', 'diff', 'gain'],
                 left: 'center',
                 top: '48%'
             },
@@ -118,6 +119,13 @@
                     symbolSize: 8,
                     hoverAnimation: false,
                     data: amountData
+                },
+                {
+                    name: 'gain',
+                    type: 'bar',
+                    symbolSize: 8,
+                    hoverAnimation: false,
+                    data: gainData
                 },
                 {
                     name: 'diff',
